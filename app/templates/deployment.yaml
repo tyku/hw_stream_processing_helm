@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app-helm.fullname" . }}
+  namespace: default
+  labels:
+      app: homework-5
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: homework-5
+  template:
+    metadata:
+      labels:
+        app: homework-5
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
+    spec:
+      containers:
+        - name: homework-5
+          image: "{{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}"
+          imagePullPolicy: {{ .Values.app.image.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.app.containerPort }}
+          env:
+            - name: NODE_ENV
+              valueFrom:
+                configMapKeyRef:
+                  name: myapplication-config
+                  key: NODE_ENV
+            - name: DATABASE_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: myapplication-secret
+                  key: DATABASE_URI

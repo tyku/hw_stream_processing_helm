@@ -1,0 +1,693 @@
+{
+	"info": {
+		"_postman_id": "93e687de-9823-421f-9182-57e8debaeaf2",
+		"name": "homework-apigateway",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.response.json())"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{baseUrl}}/health",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"owner1\", responseJSON[\"id\"]);",
+							"pm.collectionVariables.set(\"token1\", responseJSON[\"token\"]);",
+							"console.log(pm.response.json())"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"email1\", pm.variables.replaceIn(\"{{$randomEmail}}\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email1}}\",\n    \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/auth/register",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create data for user1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//pm.collectionVariables.set(\"email1\", pm.variables.replaceIn(\"{{$randomEmail}}\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"username1\", pm.variables.replaceIn(\"{{$randomUserName}}\"));",
+							"pm.collectionVariables.set(\"firstname1\", pm.variables.replaceIn(\"{{$randomFirstName}}\"));",
+							"pm.collectionVariables.set(\"lastname1\", pm.variables.replaceIn(\"{{$randomLastName}}\"));",
+							"pm.collectionVariables.set(\"phone1\", pm.variables.replaceIn(\"{{$randomPhoneNumber}}\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token1}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username1}}\",\n    \"firstName\": \"{{firstname1}}\",\n    \"lastName\": \"{{lastname1}}\",\n    \"email\": \"{{email1}}\",\n    \"phone\": \"{{phone1}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/user",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve data for user1 with login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log(pm.response.json())"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token1}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update data for user1 with login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"firstname1\", pm.variables.replaceIn(\"{{$randomFirstName}}\"));",
+							"pm.collectionVariables.set(\"lastname1\", pm.variables.replaceIn(\"{{$randomLastName}}\"));",
+							"pm.collectionVariables.set(\"phone1\", pm.variables.replaceIn(\"{{$randomPhoneNumber}}\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token1}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"{{firstname1}}\",\n    \"lastName\": \"{{lastname1}}\",\n    \"phone\": \"{{phone1}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve data for user1 with login after update",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test updated fields: phone/firstname/lastname. Values are not equal\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(pm.collectionVariables.get(\"firstname1\")).not.eq(responseJSON[\"result\"][\"firstname\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"lastname1\")).not.eq(responseJSON[\"result\"][\"lastname\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"phone1\")).not.eq(responseJSON[\"result\"][\"phone\"])",
+							"});",
+							"",
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"firstname1\", responseJSON[\"result\"][\"firstname\"]);",
+							"pm.collectionVariables.set(\"lastname1\", responseJSON[\"result\"][\"lastname\"]);",
+							"pm.collectionVariables.set(\"phone1\", responseJSON[\"result\"][\"phone\"]);",
+							"",
+							"pm.test(\"Test updated fields: phone/firstname/lastname. Values are equal\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(pm.collectionVariables.get(\"firstname1\")).eq(responseJSON[\"result\"][\"firstname\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"lastname1\")).eq(responseJSON[\"result\"][\"lastname\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"phone1\")).eq(responseJSON[\"result\"][\"phone\"])",
+							"});",
+							"console.log(pm.response.json())"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token1}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve data for user1 without login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test. User info is not available\", function() {",
+							"    pm.expect(responseBody).eq(\"A token is required for authentication\")",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update data for user1 without login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test. User info is not available\", function() {",
+							"    pm.expect(responseBody).eq(\"A token is required for authentication\")",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"{{firstname1}}\",\n    \"lastName\": \"{{lastname1}}\",\n    \"phone\": \"{{phone1}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"owner2\", responseJSON[\"id\"]);",
+							"pm.collectionVariables.set(\"token2\", responseJSON[\"token\"]);",
+							"console.log(pm.response.json())"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"email2\", pm.variables.replaceIn(\"{{$randomEmail}}\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\": \"{{email2}}\",\n    \"password\": \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/auth/register",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create data for user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"username2\", pm.variables.replaceIn(\"{{$randomUserName}}\"));",
+							"pm.collectionVariables.set(\"firstname2\", pm.variables.replaceIn(\"{{$randomFirstName}}\"));",
+							"pm.collectionVariables.set(\"lastname2\", pm.variables.replaceIn(\"{{$randomLastName}}\"));",
+							"pm.collectionVariables.set(\"phone2\", pm.variables.replaceIn(\"{{$randomPhoneNumber}}\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token2}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username2}}\",\n    \"firstName\": \"{{firstname2}}\",\n    \"lastName\": \"{{lastname2}}\",\n    \"email\": \"{{email2}}\",\n    \"phone\": \"{{phone2}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/user",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve data for user1 with token of user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test. User info is not available\", function() {",
+							"    pm.expect(responseBody).eq(\"Forbidden, auth for watching\")",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token2}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update data for user1 with token of user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test. User info is not available\", function() {",
+							"    pm.expect(responseBody).eq(\"Forbidden, auth for watching\")",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token2}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\": \"bad firstName\",\n    \"lastName\": \"the worst lastName\",\n    \"phone\": \"unavailable phone\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Retrieve data for user2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.clear();",
+							"console.log(pm.response.json())"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-access-token",
+						"value": "{{token2}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://{{baseUrl}}/user/{{owner2}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"{{owner2}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "arch.homework"
+		},
+		{
+			"key": "owner1",
+			"value": null
+		},
+		{
+			"key": "token1",
+			"value": null
+		},
+		{
+			"key": "email1",
+			"value": null
+		},
+		{
+			"key": "username1",
+			"value": null
+		},
+		{
+			"key": "firstname1",
+			"value": null
+		},
+		{
+			"key": "lastname1",
+			"value": null
+		},
+		{
+			"key": "phone1",
+			"value": null
+		},
+		{
+			"key": "owner2",
+			"value": null
+		},
+		{
+			"key": "token2",
+			"value": null
+		},
+		{
+			"key": "email2",
+			"value": null
+		},
+		{
+			"key": "username2",
+			"value": null
+		},
+		{
+			"key": "firstname2",
+			"value": null
+		},
+		{
+			"key": "lastname2",
+			"value": null
+		},
+		{
+			"key": "phone2",
+			"value": null
+		}
+	]
+}
