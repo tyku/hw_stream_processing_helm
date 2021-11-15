@@ -7,8 +7,12 @@ metadata:
     "helm.sh/hook-weight": "-5"
 data:
   NODE_ENV: "development"
+  APP_PORT: {{ .Values.applicationPort | quote }}
   DB_NAME: {{ .Values.postgresql.postgresqlDatabase | quote }}
   DB_PORT: {{ .Values.postgresql.service.port | quote }}
+  DB_HOST: {{ include "postgresql.fullname" . }}
+  KAFKA_BROKER: {{ .Values.kafka.broker | quote }}
+  KAFKA_PORT: {{ .Values.kafka.port | quote }}
 ---
 apiVersion: v1
 kind: Secret
@@ -24,7 +28,6 @@ data:
                     .Values.postgresql.service.port
                     .Values.postgresql.postgresqlDatabase |
                     b64enc | quote }}
-  TOKEN_KEY: {{ .Values.identity.tokenKey | b64enc | quote }}
   DB_USER: {{ .Values.postgresql.postgresqlUsername | b64enc | quote }}
   DB_PSWD: {{ .Values.postgresql.postgresqlPassword | b64enc | quote }}
 
