@@ -5,23 +5,23 @@ metadata:
   name: {{ include "app-helm.fullname" . }}
   namespace: default
   labels:
-      app: user-service
+      app: {{ .Values.serviceInstance.nameOverride }}
 spec:
   replicas: {{ .Values.replicaCount }}
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: user-service
+      app: {{ .Values.serviceInstance.nameOverride }}
   template:
     metadata:
       labels:
-        app: user-service
+        app: {{ .Values.serviceInstance.nameOverride }}
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/config.yaml") . | sha256sum }}
     spec:
       containers:
-        - name: user-service
+        - name: {{ .Values.serviceInstance.nameOverride }}
           image: "{{ .Values.serviceInstance.image.repository }}:{{ .Values.serviceInstance.image.tag }}"
           imagePullPolicy: {{ .Values.serviceInstance.image.imagePullPolicy }}
           ports:
@@ -29,50 +29,54 @@ spec:
               containerPort: {{ .Values.serviceInstance.containerPort }}
           env:
             - name: SERVICE_NAME
-              value: user-service
+              value: {{ .Values.serviceInstance.nameOverride }}
             - name: PORT
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: APP_PORT
             - name: KAFKA_BROKER
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: KAFKA_BROKER
             - name: KAFKA_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: KAFKA_PORT
             - name: NODE_ENV
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: NODE_ENV
             - name: PG_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: DB_HOST
             - name: PG_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: DB_PORT
             - name: PG_DB
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: DB_NAME
             - name: PG_USER
               valueFrom:
                 secretKeyRef:
-                  name: myapplication-secret
+                  name: "{{ .Values.serviceInstance.nameOverride }}-secret"
                   key: DB_USER
             - name: PG_PASSWD
               valueFrom:
                 secretKeyRef:
-                  name: myapplication-secret
+                  name: "{{ .Values.serviceInstance.nameOverride }}-secret"
                   key: DB_PSWD
-          command: ["npm", "run", "start", "user-service"]
+          command:
+            - npm
+            - run
+            - start
+            - {{ .Values.serviceInstance.nameOverride }}

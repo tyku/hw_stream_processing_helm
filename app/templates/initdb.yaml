@@ -35,40 +35,40 @@ spec:
           image: "{{ .Values.serviceInstance.image.repository }}:{{ .Values.serviceInstance.image.tag }}"
           env:
             - name: SERVICE_NAME
-              value: user-service
+              value: {{ .Values.serviceInstance.nameOverride }}
             - name: NODE_ENV
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: NODE_ENV
             - name: PG_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: DB_HOST
             - name: PG_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: DB_PORT
             - name: PG_DB
               valueFrom:
                 configMapKeyRef:
-                  name: myapplication-config
+                  name: "{{ .Values.serviceInstance.nameOverride }}-config"
                   key: DB_NAME
             - name: PG_USER
               valueFrom:
                 secretKeyRef:
-                  name: myapplication-secret
+                  name: "{{ .Values.serviceInstance.nameOverride }}-secret"
                   key: DB_USER
             - name: PG_PASSWD
               valueFrom:
                 secretKeyRef:
-                  name: myapplication-secret
+                  name: "{{ .Values.serviceInstance.nameOverride }}-secret"
                   key: DB_PSWD
           command:
             - npm
             - run
             - typeorm:run
-            - --service=user-service
+            - --service={{ .Values.serviceInstance.nameOverride }}
   backoffLimit: 0

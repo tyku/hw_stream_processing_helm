@@ -1,0 +1,692 @@
+{
+	"info": {
+		"_postman_id": "6e38a7c5-258a-4614-9ec3-4740dbc00f7c",
+		"name": "hw_stream_processing",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"user_id1\", responseJSON[\"id\"]);",
+							"console.log(pm.response.json())",
+							"",
+							"pm.test(\"Test created user\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(pm.collectionVariables.get(\"username1\")).eq(responseJSON[\"username\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"firstname1\")).eq(responseJSON[\"firstname\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"email1\")).eq(responseJSON[\"email\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"age1\")).eq(responseJSON[\"age\"]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"username1\", pm.variables.replaceIn(\"{{$randomUserName}}\"));",
+							"pm.collectionVariables.set(\"firstname1\", pm.variables.replaceIn(\"{{$randomFirstName}}\"));",
+							"pm.collectionVariables.set(\"age1\", pm.variables.replaceIn(_.random (18,70)));",
+							"pm.collectionVariables.set(\"email1\", pm.variables.replaceIn(\"{{$randomEmail}}\"));",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username1}}\",\n    \"firstname\": \"{{firstname1}}\",\n    \"age\": {{age1}},\n    \"email\": \"{{email1}}\"\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/user/v1/users",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"user",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get created account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test created billing account after user creating event\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(pm.collectionVariables.get(\"user_id1\")).eq(responseJSON[0][\"user_id\"]);",
+							"    pm.expect(responseJSON[0][\"amount\"]).eq(0);",
+							"    pm.expect(responseJSON[0][\"event\"]).eq('refill')",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(function(){}, 1000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/billing/v1/billing/{{user_id1}}/operations",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"v1",
+						"billing",
+						"{{user_id1}}",
+						"operations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refill account",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"balance1\", 10000);",
+							"",
+							"pm.test(\"Test refill user balance\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(pm.collectionVariables.get(\"user_id1\")).eq(responseJSON[\"user_id\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"balance1\")).eq(responseJSON[\"amount\"]);",
+							"    pm.expect(responseJSON[\"event\"]).eq('refill')",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_id\": {{user_id1}},\n    \"amount\": 10000,\n    \"event\": \"refill\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/billing/v1/billing",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"v1",
+						"billing"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get actual balance",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test get actual user balance\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(responseJSON[\"balance\"]).eq(pm.collectionVariables.get(\"balance1\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/billing/v1/billing/{{user_id1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"v1",
+						"billing",
+						"{{user_id1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create order with small price",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"smallprice_id1\", responseJSON[\"id\"]);",
+							"console.log(pm.response.json())",
+							"",
+							"pm.test(\"Test create order with small price\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"    pm.expect(pm.collectionVariables.get(\"smallprice_id1\")).eq(responseJSON[\"id\"]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{$randomProductName}}\",\n    \"price\": 1000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/order/v1/order",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order",
+						"v1",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create order with big price",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"bigprice_id1\", responseJSON[\"id\"]);",
+							"console.log(pm.response.json())",
+							"",
+							"pm.test(\"Test create order with big price\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"    pm.expect(pm.collectionVariables.get(\"bigprice_id1\")).eq(responseJSON[\"id\"]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"{{$randomProductName}}\",\n    \"price\": 100000\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/order/v1/order",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order",
+						"v1",
+						"order"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order small price good",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"smallprice_id1\", responseJSON[\"id\"]);",
+							"pm.collectionVariables.set(\"balance1\", pm.collectionVariables.get(\"balance1\") - 1000);",
+							"",
+							"console.log(pm.response.json())",
+							"",
+							"pm.test(\"Test create order with small price\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"    pm.expect(responseJSON[\"text\"]).eq(\"Заявка создана\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order_id\": {{smallprice_id1}},\n    \"user_id\": {{user_id1}},\n    \"email\": \"{{email1}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/order/v1/order/make",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order",
+						"v1",
+						"order",
+						"make"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get actual balance after small",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test get actual user balance\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(responseJSON[\"balance\"]).eq(pm.collectionVariables.get(\"balance1\"));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(function(){}, 1000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/billing/v1/billing/{{user_id1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"v1",
+						"billing",
+						"{{user_id1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get notification small price",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test get notification with success status\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"    pm.expect(responseJSON[\"message\"]).eq('Успех');",
+							"    pm.expect(responseJSON[\"type\"]).eq(\"good\");",
+							"    pm.expect(pm.collectionVariables.get(\"user_id1\")).eq(responseJSON[\"user_id\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"email1\")).eq(responseJSON[\"email\"]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/notification/v1/notification/{{user_id1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"notification",
+						"v1",
+						"notification",
+						"{{user_id1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Order big price fail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responseJSON = JSON.parse(responseBody);",
+							"pm.collectionVariables.set(\"bigprice_id1\", responseJSON[\"id\"]);",
+							"console.log(pm.response.json())",
+							"",
+							"pm.test(\"Test create order with big price\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"    pm.expect(responseJSON[\"text\"]).eq(\"Заявка создана\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"order_id\": {{bigprice_id1}},\n    \"user_id\": {{user_id1}},\n    \"email\": \"{{email1}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/order/v1/order/make",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"order",
+						"v1",
+						"order",
+						"make"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get actual balance after big",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test get actual user balance\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"",
+							"    pm.expect(responseJSON[\"balance\"]).eq(9000);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"setTimeout(function(){}, 1000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/billing/v1/billing/{{user_id1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"billing",
+						"v1",
+						"billing",
+						"{{user_id1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get notification big price",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test get notification with success status\", function() {",
+							"    var responseJSON = JSON.parse(responseBody);",
+							"    pm.expect(responseJSON[\"message\"]).eq('Не успех');",
+							"    pm.expect(responseJSON[\"type\"]).eq(\"bad\");",
+							"    pm.expect(pm.collectionVariables.get(\"user_id1\")).eq(responseJSON[\"user_id\"]);",
+							"    pm.expect(pm.collectionVariables.get(\"email1\")).eq(responseJSON[\"email\"]);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://{{baseUrl}}/notification/v1/notification/{{user_id1}}",
+					"protocol": "http",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"notification",
+						"v1",
+						"notification",
+						"{{user_id1}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "arch.homework"
+		},
+		{
+			"key": "firstname1",
+			"value": ""
+		},
+		{
+			"key": "username1",
+			"value": ""
+		},
+		{
+			"key": "age1",
+			"value": ""
+		},
+		{
+			"key": "email1",
+			"value": ""
+		},
+		{
+			"key": "user_id1",
+			"value": ""
+		},
+		{
+			"key": "smallprice_id1",
+			"value": ""
+		},
+		{
+			"key": "bigprice_id1",
+			"value": ""
+		},
+		{
+			"key": "balance1",
+			"value": "0"
+		}
+	]
+}

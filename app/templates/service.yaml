@@ -2,12 +2,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: user-service
+  name: {{ .Values.serviceInstance.nameOverride }}
   namespace: default
 spec:
   type: {{ .Values.serviceInstance.service.type }}
   selector:
-    app: user-service
+    app: {{ .Values.serviceInstance.nameOverride }}
   ports:
     - port: 80
       name: http

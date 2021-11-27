@@ -14,36 +14,60 @@ helm repo update
 ```
 Install nginx-ingress
 ```bash
-helm install --version "3.35.0" -n nginx-ingress -f ./hw-apigtw-helm/nginx-ingress/nginx.yaml \
+helm install --version "3.35.0" -n nginx-ingress -f ./nginx-ingress/nginx.yaml \
 ingress-nginx ingress-nginx/ingress-nginx
 ```
 
 Apply routes
 ```bash
-kubectl apply -f ./hw-apigtw-helm/nginx-ingress/routes.yaml
+kubectl apply -f ./nginx-ingress/routes.yaml
 
 minikube service -n nginx-ingress ingress-nginx-controller
 ```
 
-## Install auth service
-
-namespace default
+## Install Kafka
+Add repo
 ```bash
-helm install gateway ./hw-apigtw-helm/gateway
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo update
+helm install kafka bitnami/kafka
 ```
 
-## Install application
+## Install user service
 
 namespace default
 ```bash
-helm install myapplication ./hw-apigtw-helm/app
+helm install user ./app -f ./user-service/values.yaml
+```
+
+## Install order service
+
+namespace default
+```bash
+helm install user ./app -f ./order-service/values.yaml
+```
+
+## Install billing service
+
+namespace default
+```bash
+helm install user ./app -f ./billing-service/values.yaml
+```
+
+## Install notification service
+
+namespace default
+```bash
+helm install user ./app -f ./notification-service/values.yaml
 ```
 
 ## Uninstall
 
 ```bash
-helm un myapplciation
-helm un gateway
+helm un user
+helm un order
+helm un billing
+helm un notification
 ```
 
 
@@ -54,7 +78,7 @@ brew install newman
 ```
 and run prepared test
 ```
-newman run ./homework-apigateway.postman_collection.json
+newman run ./hw_stream_processing.postman_collection.json
 ```
 or import this file to postman, and start manually
 

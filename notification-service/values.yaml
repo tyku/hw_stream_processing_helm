@@ -1,0 +1,10 @@
+serviceInstance:
+  nameOverride: notification-service
+  image:
+    repository: tyku/hw_stream_processing
+    imagePullPolicy: Always
+    tag: latest
+  containerPort: 8000
+  service:
+    type: ClusterIP
+    port: 80

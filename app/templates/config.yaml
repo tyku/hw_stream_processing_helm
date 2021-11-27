@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: myapplication-config
+  name: "{{ .Values.serviceInstance.nameOverride }}-config"
   annotations:
     "helm.sh/hook-weight": "-5"
 data:
@@ -17,7 +17,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: myapplication-secret
+  name: "{{ .Values.serviceInstance.nameOverride }}-secret"
   annotations:
     "helm.sh/hook-weight": "-10"
 type: Opaque
