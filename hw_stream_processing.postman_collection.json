@@ -76,6 +76,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"console.log(pm.response.json())",
+							"",
 							"pm.test(\"Test created billing account after user creating event\", function() {",
 							"    var responseJSON = JSON.parse(responseBody);",
 							"",
@@ -136,6 +138,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"console.log(pm.response.json())",
+							"",
 							"pm.collectionVariables.set(\"balance1\", 10000);",
 							"",
 							"pm.test(\"Test refill user balance\", function() {",
@@ -184,6 +188,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"console.log(pm.response.json())",
+							"",
 							"pm.test(\"Test get actual user balance\", function() {",
 							"    var responseJSON = JSON.parse(responseBody);",
 							"",
@@ -385,6 +391,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"console.log(pm.response.json())",
+							"",
 							"pm.test(\"Test get actual user balance\", function() {",
 							"    var responseJSON = JSON.parse(responseBody);",
 							"",
@@ -442,6 +450,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"console.log(pm.response.json())",
+							"",
 							"pm.test(\"Test get notification with success status\", function() {",
 							"    var responseJSON = JSON.parse(responseBody);",
 							"    pm.expect(responseJSON[\"message\"]).eq('Успех');",
@@ -535,6 +545,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"console.log(pm.response.json())",
+							"",
 							"pm.test(\"Test get actual user balance\", function() {",
 							"    var responseJSON = JSON.parse(responseBody);",
 							"",
@@ -592,6 +604,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
+							"console.log(pm.response.json())",
+							"",
 							"pm.test(\"Test get notification with success status\", function() {",
 							"    var responseJSON = JSON.parse(responseBody);",
 							"    pm.expect(responseJSON[\"message\"]).eq('Не успех');",
