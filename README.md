@@ -1,4 +1,4 @@
-# Homework api gateway
+# Homework stream-processing (Event-collaboration)
 
 ## Install user service
 
